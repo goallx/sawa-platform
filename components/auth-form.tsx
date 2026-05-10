@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
+import { Link, useRouter } from "@/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,6 +23,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
+  const t = useTranslations("common");
   const router = useRouter();
   const supabase = createClient();
   const [email, setEmail] = useState("");
@@ -93,7 +94,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       <CardHeader className="space-y-6 text-center">
         <div className="space-y-2">
           <div className="text-3xl font-bold tracking-tight text-[#4F46E5]">SAWA</div>
-          <p className="text-sm text-slate-500">Build together.</p>
+          <p className="text-sm text-slate-500">{t("tagline")}</p>
         </div>
         <div className="space-y-1">
           <CardTitle>{isSignup ? "Create your account" : "Welcome back"}</CardTitle>
@@ -159,11 +160,11 @@ export function AuthForm({ mode }: AuthFormProps) {
         <div className="mt-6 text-center text-sm text-slate-500">
           {isSignup ? (
             <Link className="font-medium text-[#4F46E5] hover:text-[#4338CA]" href="/login">
-              Already building? Log in →
+              Already building? {t("login")} →
             </Link>
           ) : (
             <Link className="font-medium text-[#4F46E5] hover:text-[#4338CA]" href="/signup">
-              Start building →
+              {t("signup")} →
             </Link>
           )}
         </div>

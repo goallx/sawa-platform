@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 
 import { requireUser } from "@/lib/auth";
 import { getQuestOverview } from "@/lib/quests";
@@ -9,6 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function enrollInQuest(formData: FormData) {
   const user = await requireUser();
+  const locale = await getLocale();
   const slug = String(formData.get("slug") ?? "");
   const supabase = createClient();
 
@@ -20,10 +22,10 @@ export async function enrollInQuest(formData: FormData) {
 
   if (overview.enrollment) {
     if (overview.currentStep) {
-      redirect(`/quests/${slug}/step/${overview.currentStep.order_index}`);
+      redirect(`/${locale}/quests/${slug}/step/${overview.currentStep.order_index}`);
     }
 
-    redirect(`/quests/${slug}`);
+    redirect(`/${locale}/quests/${slug}`);
   }
 
   const { data: enrollment, error: enrollmentError } = await supabase
@@ -56,7 +58,7 @@ export async function enrollInQuest(formData: FormData) {
   revalidatePath("/quests");
   revalidatePath(`/quests/${slug}`);
   revalidatePath("/dashboard");
-  redirect(`/quests/${slug}/step/1`);
+  redirect(`/${locale}/quests/${slug}/step/1`);
 }
 
 export async function saveStepForLater(formData: FormData) {
@@ -95,6 +97,8 @@ export async function saveStepForLater(formData: FormData) {
   revalidatePath(`/quests/${slug}/step/${order}`);
   revalidatePath(`/quests/${slug}`);
   revalidatePath("/dashboard");
+
+  return { ok: true as const };
 }
 
 export async function completeQuestStep(formData: FormData) {
@@ -138,6 +142,8 @@ export async function completeQuestStep(formData: FormData) {
     throw new Error(completeError.message);
   }
 
+  let nextUrl = `/quests/${slug}/complete`;
+
   if (nextStep?.progress) {
     const { error: nextError } = await supabase
       .from("progress")
@@ -150,6 +156,8 @@ export async function completeQuestStep(formData: FormData) {
     if (nextError) {
       throw new Error(nextError.message);
     }
+
+    nextUrl = `/quests/${slug}/step/${nextStep.order_index}`;
   } else {
     const { error: enrollmentError } = await supabase
       .from("enrollments")
@@ -167,13 +175,13 @@ export async function completeQuestStep(formData: FormData) {
   revalidatePath("/quests");
   revalidatePath(`/quests/${slug}`);
   revalidatePath(`/quests/${slug}/step/${order}`);
+  revalidatePath(`/quests/${slug}/complete`);
   revalidatePath("/dashboard");
 
-  if (nextStep) {
-    redirect(`/quests/${slug}/step/${nextStep.order_index}`);
-  }
-
-  redirect(`/quests/${slug}/complete`);
+  return {
+    ok: true as const,
+    nextUrl
+  };
 }
 
 function normalizeOptionalString(value: FormDataEntryValue | null) {

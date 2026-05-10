@@ -53,3 +53,30 @@ export interface QuestWithEnrollment extends Quest {
 export interface QuestStepWithProgress extends QuestStep {
   progress?: ProgressRecord | null;
 }
+
+export interface ActivityItem {
+  id: string;
+  type: "enrolled" | "completed" | "started" | "saved";
+  label: string;
+  timestamp: string;
+}
+
+export interface DashboardStats {
+  questsCompleted: number;
+  projectsShipped: number;
+  currentStreak: number;
+  communityRank: number;
+}
+
+export interface AdminStudentRow {
+  userId: string;
+  email: string;
+  name: string;
+  questSlug: string;
+  questTitle: string;
+  progressPercentage: number;
+  currentStepName: string;
+  currentStepOrder: number | null;
+  lastActiveAt: string;
+  status: "On Track" | "Needs Nudge" | "At Risk" | "Shipping Today";
+}

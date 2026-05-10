@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { QuestEnrollForm } from "@/components/quest-enroll-form";
@@ -8,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth";
 import { getQuestOverview } from "@/lib/quests";
+import { Link } from "@/navigation";
 
 export default async function QuestOverviewPage({
   params

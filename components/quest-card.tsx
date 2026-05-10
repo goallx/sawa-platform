@@ -1,8 +1,7 @@
-import Link from "next/link";
-
 import { QuestEnrollForm } from "@/components/quest-enroll-form";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/navigation";
 import type { QuestWithEnrollment } from "@/lib/types";
 
 export function QuestCard({ quest }: { quest: QuestWithEnrollment }) {

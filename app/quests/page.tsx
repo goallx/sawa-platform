@@ -2,7 +2,7 @@ import { requireUser } from "@/lib/auth";
 import { getActiveQuests } from "@/lib/quests";
 import { QuestCard } from "@/components/quest-card";
 import { buttonVariants } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@/navigation";
 
 export default async function QuestsPage() {
   const user = await requireUser();

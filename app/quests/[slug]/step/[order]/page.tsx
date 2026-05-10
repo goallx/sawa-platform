@@ -1,13 +1,14 @@
-import { AlertCircle } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
+import type { Route } from "next";
 
-import { MarkdownContent } from "@/components/markdown-content";
-import { ProgressBar } from "@/components/progress-bar";
+import { MissionCollapsible } from "@/components/mission-collapsible";
 import { QuestStepForm } from "@/components/quest-step-form";
-import { QuestStepList } from "@/components/quest-step-list";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
 import { requireUser } from "@/lib/auth";
 import { getQuestStepPageData, parseQuestStepContent } from "@/lib/quests";
+import { Link } from "@/navigation";
+import { cn } from "@/lib/utils";
 
 export default async function QuestStepPage({
   params
@@ -34,72 +35,93 @@ export default async function QuestStepPage({
     redirect(`/quests/${params.slug}`);
   }
 
-  const { mission, tips, stuck } = parseQuestStepContent(data.step.content);
+  const mission = parseQuestStepContent(data.step.content);
+  const minuteTone =
+    data.step.estimated_minutes < 10 ? "text-amber-900" : "text-[#4F46E5]";
 
   return (
-    <div className="grid gap-8 xl:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
-      <div className="space-y-6">
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-[#4F46E5]">
-            {data.quest.title}
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight text-[#0F172A]">
-            {data.step.title}
-          </h1>
-          <p className="text-sm text-slate-500">{data.step.estimated_minutes} min mission</p>
+    <div className="space-y-6">
+      <div className="sticky top-0 z-10 -mx-6 border-b border-[#E2E8F0] bg-white px-6 py-4 md:-mx-8 md:px-8">
+        <div className="grid items-center gap-3 md:grid-cols-[1fr_auto_1fr]">
+          <div>
+            <Link
+              href={`/quests/${params.slug}` as Route}
+              className="text-sm font-medium text-slate-500 hover:text-[#0F172A]"
+            >
+              ← Back to Quest
+            </Link>
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-semibold text-[#0F172A]">
+              Mission {data.step.order_index}: {data.step.title}
+            </p>
+          </div>
+          <div className="text-left md:text-right">
+            <p className={cn("text-sm font-medium", minuteTone)}>
+              ⏱ {data.step.estimated_minutes} min left
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-4xl space-y-6">
+        {mission.context.length ? (
+          <div className="space-y-2">
+            {mission.context.map((line, index) => (
+              <p key={index} className="text-base leading-7 text-slate-600">
+                {line}
+              </p>
+            ))}
+          </div>
+        ) : null}
+
+        <Card className="mx-auto w-full max-w-3xl">
+          <CardContent className="space-y-6 p-6">
+            <div className="space-y-2">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#4F46E5]">
+                DO THIS NOW
+              </p>
+              <ol className="space-y-3">
+                {mission.actions.map((action, index) => (
+                  <li key={index} className="flex gap-3 text-base text-[#0F172A]">
+                    <span className="font-semibold text-[#4F46E5]">{index + 1}.</span>
+                    <span>{action}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <a
+              href="#deliverable-section"
+              className={cn(buttonVariants(), "w-full justify-center")}
+            >
+              I did this →
+            </a>
+          </CardContent>
+        </Card>
+
+        <div className="space-y-4">
+          <MissionCollapsible title="💡 Tips" tone="amber" items={mission.tips} />
+          <MissionCollapsible
+            title="🆘 Stuck?"
+            tone="sky"
+            items={mission.stuck}
+            footer={
+              <Link
+                href="https://discord.com"
+                target="_blank"
+                rel="noreferrer"
+                className="text-sky-900 underline underline-offset-4"
+              >
+                Still stuck? Ask in Discord →
+              </Link>
+            }
+          />
         </div>
 
         <Card>
-          <CardContent className="space-y-6 p-6">
-            <MarkdownContent content={mission} />
-
-            {tips ? (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-5">
-                <h2 className="text-sm font-semibold text-amber-900">Tips</h2>
-                <div className="mt-3">
-                  <MarkdownContent content={tips} />
-                </div>
-              </div>
-            ) : null}
-
-            {stuck ? (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-5">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-amber-700" />
-                  <h2 className="text-sm font-semibold text-amber-900">Stuck?</h2>
-                </div>
-                <div className="mt-3">
-                  <MarkdownContent content={stuck} />
-                </div>
-              </div>
-            ) : null}
-
+          <CardContent className="p-6">
             <QuestStepForm slug={data.quest.slug} step={data.step} />
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="space-y-6">
-        <Card>
-          <CardHeader className="space-y-4">
-            <div className="space-y-2">
-              <CardTitle className="text-xl text-[#0F172A]">Progress</CardTitle>
-              <p className="text-sm text-slate-500">{data.progressPercentage}% complete</p>
-            </div>
-            <ProgressBar value={data.progressPercentage} />
-          </CardHeader>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl text-[#0F172A]">Quest steps</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <QuestStepList
-              questSlug={data.quest.slug}
-              steps={data.steps}
-              currentOrder={data.step.order_index}
-            />
           </CardContent>
         </Card>
       </div>

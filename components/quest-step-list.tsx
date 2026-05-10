@@ -1,7 +1,7 @@
-import Link from "next/link";
 import type { Route } from "next";
 import { CheckCircle2, Circle, Lock } from "lucide-react";
 
+import { Link } from "@/navigation";
 import { getStepStatusLabel } from "@/lib/quests";
 import type { QuestStepWithProgress } from "@/lib/types";
 import { cn } from "@/lib/utils";

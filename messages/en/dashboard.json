@@ -1,0 +1,10 @@
+{
+  "welcomeFallback": "Hey, builder",
+  "subtitle": "May Intensive • Day 2 of 3",
+  "liveNow": "LIVE NOW • 6 builders active",
+  "activeQuest": "Your Active Quest",
+  "deadline": "Today's deadline: Ship draft by 6pm • 4 hours left",
+  "emptyTitle": "No active quest. Pick one and start building.",
+  "emptyBody": "The cohort is already moving. Jump into a quest and ship alongside them.",
+  "browse": "Browse Quests"
+}

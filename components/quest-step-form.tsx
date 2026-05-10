@@ -1,7 +1,10 @@
-import Link from "next/link";
+"use client";
+
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
+import { useRef, useState, useTransition } from "react";
 
 import { completeQuestStep, saveStepForLater } from "@/app/quests/actions";
-import { SubmitButton } from "@/components/submit-button";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,27 +17,103 @@ interface QuestStepFormProps {
 }
 
 export function QuestStepForm({ slug, step }: QuestStepFormProps) {
-  const inputType = step.deliverable_type === "url" ? "url" : "text";
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isPending, startTransition] = useTransition();
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    if (!formRef.current) return;
+
+    setError(null);
+    setMessage(null);
+
+    const formData = new FormData(formRef.current);
+
+    startTransition(async () => {
+      try {
+        await saveStepForLater(formData);
+        setMessage("Saved for later.");
+        router.refresh();
+      } catch (nextError) {
+        setError(nextError instanceof Error ? nextError.message : "Could not save this step.");
+      }
+    });
+  }
+
+  async function handleComplete() {
+    if (!formRef.current) return;
+
+    setError(null);
+    setMessage(null);
+
+    if (!formRef.current.reportValidity()) {
+      return;
+    }
+
+    const formData = new FormData(formRef.current);
+
+    startTransition(async () => {
+      try {
+        const result = await completeQuestStep(formData);
+        setMessage("Shipped! Unlocking next...");
+        setTimeout(() => {
+          router.push(result.nextUrl as Route);
+          router.refresh();
+        }, 1000);
+      } catch (nextError) {
+        setError(
+          nextError instanceof Error ? nextError.message : "Could not complete this mission."
+        );
+      }
+    });
+  }
 
   return (
-    <form action={saveStepForLater} className="space-y-4 border-t border-[#E2E8F0] pt-6">
+    <form ref={formRef} id="deliverable-section" className="space-y-5">
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="order" value={step.order_index} />
-      {step.deliverable_type !== "none" ? (
+
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold tracking-tight text-[#0F172A]">
+          YOUR DELIVERABLE
+        </h2>
+        <p className="text-sm text-slate-500">
+          Share the proof so you can unlock the next mission.
+        </p>
+      </div>
+
+      {(step.deliverable_type === "text" || step.deliverable_type === "screenshot") && (
         <div className="space-y-2">
-          <Label htmlFor="deliverable">
-            {step.deliverable_prompt ?? "Deliverable"}
-          </Label>
-          <Input
+          <Label htmlFor="deliverable">{step.deliverable_prompt ?? "Deliverable"}</Label>
+          <textarea
             id="deliverable"
             name="deliverable"
-            type={inputType}
             defaultValue={step.progress?.deliverable ?? ""}
+            rows={6}
+            className="flex w-full rounded-lg border border-[#E2E8F0] bg-white px-4 py-3 text-sm text-[#0F172A] outline-none transition-colors placeholder:text-slate-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15"
             placeholder={step.deliverable_prompt ?? "Add your deliverable"}
             required
           />
         </div>
-      ) : null}
+      )}
+
+      {step.deliverable_type === "url" && (
+        <div className="space-y-2">
+          <Label htmlFor="deliverable">{step.deliverable_prompt ?? "Deliverable"}</Label>
+          <Input
+            id="deliverable"
+            name="deliverable"
+            type="url"
+            defaultValue={step.progress?.deliverable ?? ""}
+            placeholder={step.deliverable_prompt ?? "https://"}
+            required
+            className="h-12 px-4"
+          />
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label htmlFor="notes">Notes for yourself</Label>
         <textarea
@@ -42,37 +121,41 @@ export function QuestStepForm({ slug, step }: QuestStepFormProps) {
           name="notes"
           defaultValue={step.progress?.notes ?? ""}
           rows={4}
-          className="flex w-full rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#0F172A] outline-none transition-colors placeholder:text-slate-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15"
-          placeholder="Capture anything you want to remember for the next session."
+          className="flex w-full rounded-lg border border-[#E2E8F0] bg-white px-4 py-3 text-sm text-[#0F172A] outline-none transition-colors placeholder:text-slate-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15"
+          placeholder="Anything you want to remember before the next mission."
         />
       </div>
-      <div className="grid gap-3 lg:grid-cols-[1fr_1fr_auto]">
-        <SubmitButton
-          type="submit"
-          idleText="Save for Later"
-          pendingText="Saving..."
-          variant="outline"
-          formNoValidate
-          className="w-full"
-        />
-        <SubmitButton
-          formAction={completeQuestStep}
-          type="submit"
-          idleText="Mark Complete"
-          pendingText="Completing..."
-          className="w-full"
-        />
-        <Link
-          href="https://discord.com"
-          target="_blank"
-          rel="noreferrer"
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "w-full border-amber-200 bg-amber-100 text-amber-900 hover:bg-amber-200 lg:w-auto"
-          )}
+
+      {message ? (
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+          {message}
+        </div>
+      ) : null}
+
+      {error ? (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
+          {error}
+        </div>
+      ) : null}
+
+      <div className="space-y-3">
+        <button
+          type="button"
+          onClick={handleComplete}
+          disabled={isPending}
+          className={cn(buttonVariants(), "w-full py-3 text-base")}
         >
-          🆘 Stuck?
-        </Link>
+          {isPending ? "Unlocking..." : "✓ Mark Complete — Unlock Next Mission"}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={isPending}
+          className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+        >
+          {isPending ? "Saving..." : "Save for Later"}
+        </button>
       </div>
     </form>
   );

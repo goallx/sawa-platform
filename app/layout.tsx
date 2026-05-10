@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
+import { Inter, Noto_Sans_Arabic } from "next/font/google";
 
-import { AppShell } from "@/components/app-shell";
-import { getCurrentUser } from "@/lib/auth";
+import { defaultLocale, isRTL } from "@/i18n";
 
 import "./globals.css";
 
 const inter = Inter({
-  subsets: ["latin"]
+  subsets: ["latin"],
+  variable: "--font-inter"
+});
+
+const notoSansArabic = Noto_Sans_Arabic({
+  subsets: ["arabic"],
+  variable: "--font-arabic"
 });
 
 export const metadata: Metadata = {
@@ -15,17 +21,21 @@ export const metadata: Metadata = {
   description: "Sawa is a builder community platform."
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getCurrentUser();
+  const locale = cookies().get("NEXT_LOCALE")?.value ?? defaultLocale;
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <AppShell userEmail={user?.email}>{children}</AppShell>
+    <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}>
+      <body
+        className={`${inter.variable} ${notoSansArabic.variable} ${
+          isRTL(locale) ? "font-[var(--font-arabic)]" : "font-[var(--font-inter)]"
+        } bg-white text-[#0F172A]`}
+      >
+        {children}
       </body>
     </html>
   );
