@@ -29,6 +29,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const isSignup = mode === "signup";
@@ -36,6 +37,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setMessage(null);
 
     if (isSignup && password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -56,8 +58,9 @@ export function AuthForm({ mode }: AuthFormProps) {
         }
 
         if (!data.session) {
-          router.push("/login");
-          router.refresh();
+          setMessage(
+            "Account created. Check your email to confirm your account before signing in."
+          );
           return;
         }
       } else {
@@ -77,9 +80,9 @@ export function AuthForm({ mode }: AuthFormProps) {
 
       window.location.assign("/dashboard");
     } catch (err) {
-      const message =
+      const nextMessage =
         err instanceof Error ? err.message : "Something went wrong. Please try again.";
-      setError(message);
+      setError(nextMessage);
     } finally {
       setLoading(false);
     }
@@ -141,6 +144,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               />
             </div>
           ) : null}
+          {message ? <p className="text-sm text-slate-500">{message}</p> : null}
           {error ? <p className="text-sm text-[#4F46E5]">{error}</p> : null}
           <Button className="w-full" type="submit" disabled={loading}>
             {loading
