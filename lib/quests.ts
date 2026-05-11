@@ -1,6 +1,7 @@
 import { cache } from "react";
 import type { User } from "@supabase/supabase-js";
 
+import { getDisplayName, getProfile, getProfileStatus } from "@/lib/profiles";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type {
@@ -210,16 +211,20 @@ export async function getActiveEnrollmentForDashboard(userId: string) {
 }
 
 export async function getDashboardData(user: User) {
-  const [activeEnrollment, recentActivity, completedProgress] = await Promise.all([
+  const [activeEnrollment, recentActivity, completedProgress, profile] = await Promise.all([
     getActiveEnrollmentForDashboard(user.id),
     getRecentActivity(user.id),
-    getCompletedProgress(user.id)
+    getCompletedProgress(user.id),
+    getProfile(user.id)
   ]);
+  const profileStatus = getProfileStatus(profile);
 
   return {
-    welcomeName: getDisplayNameFromUser(user),
+    welcomeName: getDisplayName(profile, user.email),
     activeEnrollment,
     recentActivity,
+    profile,
+    profileStatus,
     stats: {
       questsCompleted: 0,
       projectsShipped: 0,

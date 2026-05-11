@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 
+import { getPostAuthRedirectPath } from "@/lib/profiles";
 import { createClient } from "@/lib/supabase/server";
 
 export async function getCurrentUser() {
@@ -20,6 +21,11 @@ export async function requireUser() {
   }
 
   return user;
+}
+
+export async function redirectAuthenticatedUser(user: User) {
+  const nextPath = await getPostAuthRedirectPath(user.id);
+  redirect(nextPath);
 }
 
 export function isAdminUser(user: User | null) {

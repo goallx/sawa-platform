@@ -79,7 +79,30 @@ export function AuthForm({ mode }: AuthFormProps) {
         }
       }
 
-      router.push("/dashboard");
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData.user?.id;
+
+      if (!userId) {
+        throw new Error("Could not find your account after authentication.");
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("completed_onboarding, full_name")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      const nextPath = isSignup
+        ? "/onboarding"
+        : !profile?.completed_onboarding && !profile?.full_name?.trim()
+          ? "/onboarding"
+          : "/dashboard";
+
+      router.push(nextPath);
       router.refresh();
     } catch (err) {
       const nextMessage =

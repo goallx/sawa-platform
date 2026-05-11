@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { AuthForm } from "@/components/auth-form";
 import { isRTL } from "@/i18n";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, redirectAuthenticatedUser } from "@/lib/auth";
 import Link from "next/link";
 
 export default async function LoginPage() {
@@ -13,7 +13,7 @@ export default async function LoginPage() {
   const ArrowIcon = rtl ? ChevronRight : ChevronLeft;
 
   if (user) {
-    redirect("/dashboard");
+    await redirectAuthenticatedUser(user);
   }
 
   return (

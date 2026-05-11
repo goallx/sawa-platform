@@ -20,11 +20,9 @@ export default async function QuestCompletePage({
     notFound();
   }
 
-  const shareText = `I just shipped my first AI-powered landing page in 3 days with @SawaBuilders 🚀
+  const shareText = `I just shipped my first AI-powered landing page in 3 days with Sawa 🚀
 No code. Just built.
 ${completion.liveUrl || "[URL]"}`;
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
-  const instagramUrl = `https://www.instagram.com/`;
   const peerReactions = [
     {
       name: "Noor",
@@ -101,11 +99,7 @@ ${completion.liveUrl || "[URL]"}`;
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-500">Use this as your ship post template.</p>
-          <ShareWinCard
-            copyText={shareText}
-            twitterUrl={twitterUrl}
-            instagramUrl={instagramUrl}
-          />
+          <ShareWinCard copyText={shareText} />
         </CardContent>
       </Card>
 

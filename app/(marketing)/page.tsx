@@ -481,17 +481,6 @@ export default function LandingPage() {
             <p className="text-sm font-semibold text-slate-900">{t("brand")}</p>
             <p className="text-sm text-slate-500">{t("footerTagline")}</p>
           </div>
-          <div className="flex items-center gap-6 text-sm text-slate-400">
-            <a href="https://discord.com" target="_blank" rel="noreferrer" className="hover:text-slate-600">
-              {t("footerDiscord")}
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-slate-600">
-              {t("footerTwitter")}
-            </a>
-            <a href="mailto:hello@sawa.so" className="hover:text-slate-600">
-              {t("footerEmail")}
-            </a>
-          </div>
         </div>
       </footer>
     </div>

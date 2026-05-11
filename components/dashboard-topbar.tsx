@@ -18,6 +18,10 @@ function getPageTitle(pathname: string) {
     return "Admin";
   }
 
+  if (pathname.startsWith("/profile")) {
+    return "Profile";
+  }
+
   if (pathname.startsWith("/quests")) {
     return "Quests";
   }

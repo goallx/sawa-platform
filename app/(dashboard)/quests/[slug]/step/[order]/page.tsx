@@ -119,14 +119,9 @@ export default async function QuestStepPage({
                   tone="sky"
                   items={mission.stuck}
                   footer={
-                    <Link
-                      href="https://discord.com"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-sky-900 underline underline-offset-4"
-                    >
-                      Still stuck? Ask in Discord →
-                    </Link>
+                    <p className="text-sm text-sky-900">
+                      Save your draft, step away for a minute, then come back and try the smallest next move.
+                    </p>
                   }
                 />
               </div>

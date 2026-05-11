@@ -2,7 +2,8 @@ import { getLocale } from "next-intl/server";
 
 import { DashboardShell } from "@/components/dashboard-shell";
 import { isRTL } from "@/i18n";
-import { isAdminUser, requireUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
+import { getDisplayName, getProfile } from "@/lib/profiles";
 
 export default async function DashboardLayout({
   children
@@ -10,11 +11,8 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [locale, user] = await Promise.all([getLocale(), requireUser()]);
-  const userName =
-    (user.user_metadata?.full_name as string | undefined) ??
-    (user.user_metadata?.name as string | undefined) ??
-    user.email?.split("@")[0] ??
-    "Builder";
+  const profile = await getProfile(user.id);
+  const userName = getDisplayName(profile, user.email);
   const userEmail = user.email ?? "builder@sawa.so";
   const userInitial = userName.charAt(0).toUpperCase() || "B";
   const rtl = isRTL(locale);
@@ -22,7 +20,6 @@ export default async function DashboardLayout({
   return (
     <DashboardShell
       isRTL={rtl}
-      isAdmin={isAdminUser(user)}
       userName={userName}
       userEmail={userEmail}
       userInitial={userInitial}

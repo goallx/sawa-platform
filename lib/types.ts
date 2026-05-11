@@ -2,6 +2,26 @@ export type QuestStatus = "draft" | "active" | "archived";
 export type EnrollmentStatus = "active" | "completed" | "dropped";
 export type ProgressStatus = "locked" | "in_progress" | "completed";
 export type DeliverableType = "text" | "url" | "screenshot" | "none";
+export type Occupation =
+  | "Student"
+  | "Freelancer"
+  | "Employee"
+  | "Entrepreneur"
+  | "Other";
+
+export interface Profile {
+  id: string;
+  full_name: string | null;
+  phone_number: string | null;
+  email: string | null;
+  bio: string | null;
+  location: string | null;
+  age: number | null;
+  occupation: Occupation | null;
+  completed_onboarding: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface Quest {
   id: string;
@@ -66,6 +86,11 @@ export interface DashboardStats {
   projectsShipped: number;
   currentStreak: number;
   communityRank: number;
+}
+
+export interface ProfileStatus {
+  completionPercentage: number;
+  missingCriticalFields: boolean;
 }
 
 export interface AdminStudentRow {

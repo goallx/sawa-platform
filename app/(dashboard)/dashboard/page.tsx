@@ -49,9 +49,26 @@ export default async function DashboardPage() {
   const user = await requireUser();
   const dashboard = await getDashboardData(user);
   const activeEnrollment = dashboard.activeEnrollment;
+  const showProfileBanner = dashboard.profileStatus.missingCriticalFields;
 
   return (
     <div className="space-y-8">
+      {showProfileBanner ? (
+        <Card className="border-indigo-200 bg-indigo-50">
+          <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-indigo-600">Complete your profile</p>
+              <p className="text-sm text-slate-600">
+                Add your name and phone number so we can place you into cohorts smoothly.
+              </p>
+            </div>
+            <Link href="/profile" className={buttonVariants({ className: "justify-center" })}>
+              Complete your profile
+            </Link>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight text-[#0F172A]">
           {dashboard.welcomeName ? `Hey ${dashboard.welcomeName}` : "Hey, builder"}

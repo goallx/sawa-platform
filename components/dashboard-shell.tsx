@@ -13,7 +13,6 @@ const SIDEBAR_STORAGE_KEY = "sawa-sidebar-collapsed";
 interface DashboardShellProps {
   children: React.ReactNode;
   isRTL: boolean;
-  isAdmin: boolean;
   userName: string;
   userEmail: string;
   userInitial: string;
@@ -22,7 +21,6 @@ interface DashboardShellProps {
 export function DashboardShell({
   children,
   isRTL,
-  isAdmin,
   userName,
   userEmail,
   userInitial
@@ -65,7 +63,6 @@ export function DashboardShell({
           collapsed={collapsed}
           onToggleCollapse={() => setCollapsed((value) => !value)}
           isRTL={isRTL}
-          isAdmin={isAdmin}
           currentPath={pathname}
           userName={userName}
           userEmail={userEmail}
@@ -78,7 +75,6 @@ export function DashboardShell({
           collapsed={false}
           onToggleCollapse={() => undefined}
           isRTL={isRTL}
-          isAdmin={isAdmin}
           currentPath={pathname}
           userName={userName}
           userEmail={userEmail}

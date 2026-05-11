@@ -5,9 +5,7 @@ import {
   ChevronRight,
   Compass,
   LayoutDashboard,
-  LogOut,
-  MessageCircle,
-  Shield,
+  User,
   X
 } from "lucide-react";
 import Link from "next/link";
@@ -20,7 +18,6 @@ interface CollapsibleSidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
   isRTL: boolean;
-  isAdmin: boolean;
   currentPath: string;
   userName: string;
   userEmail: string;
@@ -37,7 +34,6 @@ export function CollapsibleSidebar({
   collapsed,
   onToggleCollapse,
   isRTL,
-  isAdmin,
   currentPath,
   userName,
   userEmail,
@@ -127,28 +123,14 @@ export function CollapsibleSidebar({
             onClick={onNavigate}
           />
           <NavItem
-            href="https://discord.com"
-            label="Community"
-            icon={MessageCircle}
+            href="/profile"
+            label="Profile"
+            icon={User}
+            active={currentPath === "/profile"}
             collapsed={effectiveCollapsed}
-            external
             onClick={onNavigate}
           />
         </div>
-
-        {isAdmin ? (
-          <>
-            <div className="my-4 border-t border-slate-200" />
-            <NavItem
-              href="/admin"
-              label="Admin"
-              icon={Shield}
-              active={currentPath === "/admin" || currentPath.startsWith("/admin?")}
-              collapsed={effectiveCollapsed}
-              onClick={onNavigate}
-            />
-          </>
-        ) : null}
       </div>
 
       <div className="border-t border-slate-200 p-3">

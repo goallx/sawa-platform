@@ -7,15 +7,9 @@ import { cn } from "@/lib/utils";
 
 interface ShareWinCardProps {
   copyText: string;
-  twitterUrl: string;
-  instagramUrl: string;
 }
 
-export function ShareWinCard({
-  copyText,
-  twitterUrl,
-  instagramUrl
-}: ShareWinCardProps) {
+export function ShareWinCard({ copyText }: ShareWinCardProps) {
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
@@ -39,24 +33,6 @@ export function ShareWinCard({
       >
         {copied ? "Copied" : "Copy to Clipboard"}
       </button>
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <a
-          href={twitterUrl}
-          target="_blank"
-          rel="noreferrer"
-          className={cn(buttonVariants({ variant: "outline" }), "justify-center")}
-        >
-          Share on Twitter
-        </a>
-        <a
-          href={instagramUrl}
-          target="_blank"
-          rel="noreferrer"
-          className={cn(buttonVariants({ variant: "outline" }), "justify-center")}
-        >
-          Share on Instagram
-        </a>
-      </div>
     </div>
   );
 }
