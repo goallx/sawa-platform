@@ -1,7 +1,6 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
 
-import { defaultLocale } from "@/i18n";
 import { createClient } from "@/lib/supabase/server";
 
 export async function getCurrentUser() {
@@ -17,9 +16,24 @@ export async function requireUser() {
   const user = await getCurrentUser();
 
   if (!user) {
-    const locale = cookies().get("NEXT_LOCALE")?.value ?? defaultLocale;
-    redirect(`/${locale}/login`);
+    redirect("/login");
   }
 
   return user;
+}
+
+export function isAdminUser(user: User | null) {
+  if (!user) {
+    return false;
+  }
+
+  const envAdmins = (process.env.ADMINS ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const role =
+    (user.user_metadata?.role as string | undefined) ??
+    (user.app_metadata?.role as string | undefined);
+
+  return role === "admin" || (!!user.email && envAdmins.includes(user.email));
 }

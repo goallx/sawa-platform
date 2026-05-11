@@ -1,11 +1,19 @@
-import {getRequestConfig} from "next-intl/server";
-import {hasLocale} from "next-intl";
+import { cookies, headers } from "next/headers";
+import { getRequestConfig } from "next-intl/server";
 
-import {defaultLocale, locales} from "@/i18n";
+import {
+  defaultLocale,
+  detectLocaleFromHeader,
+  localeCookieName,
+  resolveLocale
+} from "@/i18n";
 
 export default getRequestConfig(async ({requestLocale}) => {
   const requested = await requestLocale;
-  const locale = hasLocale(locales, requested) ? requested : defaultLocale;
+  const cookieLocale = resolveLocale(cookies().get(localeCookieName)?.value);
+  const routeLocale = resolveLocale(requested);
+  const headerLocale = detectLocaleFromHeader(headers().get("accept-language"));
+  const locale = routeLocale ?? cookieLocale ?? headerLocale ?? defaultLocale;
 
   const [common, landing, dashboard, quest] = await Promise.all([
     import(`@/messages/${locale}/common.json`),

@@ -13,5 +13,13 @@
   "settings": "Settings",
   "logout": "Logout",
   "login": "Login",
-  "signup": "Sign Up"
+  "signup": "Sign Up",
+  "backToSawa": "Back to Sawa",
+  "newHere": "New here?",
+  "joinSawa": "Join Sawa",
+  "alreadyHaveAccount": "Already have an account?",
+  "welcomeBack": "Welcome back",
+  "createAccountTitle": "Create your account",
+  "loginDescription": "Sign in to keep building with your community.",
+  "signupDescription": "Join the builder community platform."
 }

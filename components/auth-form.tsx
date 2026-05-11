@@ -79,7 +79,8 @@ export function AuthForm({ mode }: AuthFormProps) {
         }
       }
 
-      window.location.assign("/dashboard");
+      router.push("/dashboard");
+      router.refresh();
     } catch (err) {
       const nextMessage =
         err instanceof Error ? err.message : "Something went wrong. Please try again.";
@@ -90,22 +91,29 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="space-y-6 text-center">
-        <div className="space-y-2">
-          <div className="text-3xl font-bold tracking-tight text-[#4F46E5]">SAWA</div>
-          <p className="text-sm text-slate-500">{t("tagline")}</p>
+    <Card className="w-full max-w-md rounded-xl border border-slate-200 bg-white shadow-sm">
+      <CardHeader className="space-y-6 p-8 pb-6 text-center">
+        <div className="mb-2 space-y-2">
+          <div className="inline-flex items-center justify-center gap-2 text-2xl font-bold tracking-tight text-indigo-600">
+            <span>SAWA</span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 12 12"
+              className="h-3 w-3 -translate-y-0.5 fill-indigo-600"
+            >
+              <path d="M1 2h6.2L4.6 0l1.4 0L11 5.5 6 11 4.6 11l2.6-2H1z" />
+            </svg>
+          </div>
+          <p className="text-sm text-slate-400">{t("tagline")}</p>
         </div>
         <div className="space-y-1">
-          <CardTitle>{isSignup ? "Create your account" : "Welcome back"}</CardTitle>
+          <CardTitle>{isSignup ? t("createAccountTitle") : t("welcomeBack")}</CardTitle>
           <CardDescription>
-            {isSignup
-              ? "Join the builder community platform."
-              : "Sign in to keep building with your community."}
+            {isSignup ? t("signupDescription") : t("loginDescription")}
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-8 pb-8 pt-0">
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -159,13 +167,19 @@ export function AuthForm({ mode }: AuthFormProps) {
         </form>
         <div className="mt-6 text-center text-sm text-slate-500">
           {isSignup ? (
-            <Link className="font-medium text-[#4F46E5] hover:text-[#4338CA]" href="/login">
-              Already building? {t("login")} →
-            </Link>
+            <span>
+              {t("alreadyHaveAccount")}{" "}
+              <Link className="font-medium text-[#4F46E5] hover:underline" href="/login">
+                {t("login")}
+              </Link>
+            </span>
           ) : (
-            <Link className="font-medium text-[#4F46E5] hover:text-[#4338CA]" href="/signup">
-              {t("signup")} →
-            </Link>
+            <span>
+              {t("newHere")}{" "}
+              <Link className="font-medium text-[#4F46E5] hover:underline" href="/signup">
+                {t("joinSawa")}
+              </Link>
+            </span>
           )}
         </div>
       </CardContent>

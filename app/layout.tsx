@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { cookies } from "next/headers";
 import { Inter, Noto_Sans_Arabic } from "next/font/google";
 
@@ -21,12 +23,13 @@ export const metadata: Metadata = {
   description: "Sawa is a builder community platform."
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = cookies().get("NEXT_LOCALE")?.value ?? defaultLocale;
+  const locale = (await getLocale()) || cookies().get("NEXT_LOCALE")?.value || defaultLocale;
+  const messages = await getMessages();
 
   return (
     <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}>
@@ -35,7 +38,9 @@ export default function RootLayout({
           isRTL(locale) ? "font-[var(--font-arabic)]" : "font-[var(--font-inter)]"
         } bg-white text-[#0F172A]`}
       >
-        {children}
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

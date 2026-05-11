@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Route } from "next";
 
@@ -6,13 +5,10 @@ import { AdminFilterLinks } from "@/components/admin-filter-links";
 import { AdminNudgeButton } from "@/components/admin-nudge-button";
 import { ProgressBar } from "@/components/progress-bar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { defaultLocale } from "@/i18n";
-import { requireUser } from "@/lib/auth";
+import { isAdminUser, requireUser } from "@/lib/auth";
 import { formatRelativeTime, getAdminDashboardData } from "@/lib/quests";
 import { Link } from "@/navigation";
 import { cn } from "@/lib/utils";
-
-const fallbackAdmins = ["admin@example.com"];
 
 export default async function AdminPage({
   searchParams
@@ -20,15 +16,9 @@ export default async function AdminPage({
   searchParams?: { filter?: string };
 }) {
   const user = await requireUser();
-  const admins = (process.env.ADMINS ?? "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-  const allowedAdmins = admins.length ? admins : fallbackAdmins;
-  const locale = cookies().get("NEXT_LOCALE")?.value ?? defaultLocale;
 
-  if (!user.email || !allowedAdmins.includes(user.email)) {
-    redirect(`/${locale}/dashboard`);
+  if (!isAdminUser(user)) {
+    redirect("/dashboard");
   }
 
   const filter = searchParams?.filter ?? "All";

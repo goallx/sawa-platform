@@ -13,5 +13,13 @@
   "settings": "الإعدادات",
   "logout": "تسجيل الخروج",
   "login": "دخول",
-  "signup": "إنشاء حساب"
+  "signup": "إنشاء حساب",
+  "backToSawa": "العودة إلى SAWA",
+  "newHere": "جديد هنا؟",
+  "joinSawa": "انضم إلى SAWA",
+  "alreadyHaveAccount": "لديك حساب بالفعل؟",
+  "welcomeBack": "أهلا بعودتك",
+  "createAccountTitle": "أنشئ حسابك",
+  "loginDescription": "سجّل الدخول لتكمل البناء مع مجتمعك.",
+  "signupDescription": "انضم إلى منصة مجتمع البنّائين."
 }

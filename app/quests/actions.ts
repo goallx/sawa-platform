@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getLocale } from "next-intl/server";
 
 import { requireUser } from "@/lib/auth";
 import { getQuestOverview } from "@/lib/quests";
@@ -10,7 +9,6 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function enrollInQuest(formData: FormData) {
   const user = await requireUser();
-  const locale = await getLocale();
   const slug = String(formData.get("slug") ?? "");
   const supabase = createClient();
 
@@ -22,10 +20,10 @@ export async function enrollInQuest(formData: FormData) {
 
   if (overview.enrollment) {
     if (overview.currentStep) {
-      redirect(`/${locale}/quests/${slug}/step/${overview.currentStep.order_index}`);
+      redirect(`/quests/${slug}/step/${overview.currentStep.order_index}`);
     }
 
-    redirect(`/${locale}/quests/${slug}`);
+    redirect(`/quests/${slug}`);
   }
 
   const { data: enrollment, error: enrollmentError } = await supabase
@@ -58,7 +56,7 @@ export async function enrollInQuest(formData: FormData) {
   revalidatePath("/quests");
   revalidatePath(`/quests/${slug}`);
   revalidatePath("/dashboard");
-  redirect(`/${locale}/quests/${slug}/step/1`);
+  redirect(`/quests/${slug}/step/1`);
 }
 
 export async function saveStepForLater(formData: FormData) {
