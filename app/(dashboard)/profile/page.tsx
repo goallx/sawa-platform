@@ -30,6 +30,7 @@ export default async function ProfilePage() {
           ) : null}
           <ProfileForm
             profile={profile}
+            userEmail={user.email ?? null}
             completionPercentage={status.completionPercentage}
             missingCriticalFields={status.missingCriticalFields}
           />

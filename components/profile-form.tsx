@@ -10,6 +10,7 @@ import type { Profile } from "@/lib/types";
 
 interface ProfileFormProps {
   profile: Profile | null;
+  userEmail: string | null;
   completionPercentage: number;
   missingCriticalFields: boolean;
 }
@@ -18,6 +19,7 @@ const occupationOptions = ["Student", "Freelancer", "Employee", "Entrepreneur", 
 
 export function ProfileForm({
   profile,
+  userEmail,
   completionPercentage,
   missingCriticalFields: _missingCriticalFields
 }: ProfileFormProps) {
@@ -61,6 +63,20 @@ export function ProfileForm({
       </div>
 
       <form ref={formRef} className="space-y-5">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            value={profile?.email ?? userEmail ?? ""}
+            disabled
+            readOnly
+            className="bg-slate-50 text-slate-500 disabled:cursor-not-allowed disabled:opacity-100"
+          />
+          <p className="text-xs text-slate-400">
+            Your email comes from your login account and can&apos;t be changed here.
+          </p>
+        </div>
+
         <div className="grid gap-5 md:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="full_name">Full name</Label>

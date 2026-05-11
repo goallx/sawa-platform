@@ -21,5 +21,7 @@
   "welcomeBack": "Welcome back",
   "createAccountTitle": "Create your account",
   "loginDescription": "Sign in to keep building with your community.",
-  "signupDescription": "Join the builder community platform."
+  "signupDescription": "Join the builder community platform.",
+  "continueWithGoogle": "Continue with Google",
+  "orContinueWithEmail": "Or continue with email"
 }

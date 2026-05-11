@@ -22,12 +22,12 @@ export async function saveProfile(formData: FormData) {
       full_name,
       phone_number,
       bio,
+      email: user.email ?? null,
       location,
       age,
       occupation,
-      email: user.email ?? null,
       completed_onboarding: Boolean(full_name),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
 

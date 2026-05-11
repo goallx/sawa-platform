@@ -12,6 +12,10 @@ import type { Occupation, Profile } from "@/lib/types";
 
 interface OnboardingFlowProps {
   profile: Profile | null;
+  authDefaults: {
+    email: string | null;
+    fullName: string | null;
+  };
 }
 
 const occupationOptions: Occupation[] = [
@@ -29,11 +33,11 @@ function getInitialStep(profile: Profile | null) {
   return 3;
 }
 
-export function OnboardingFlow({ profile }: OnboardingFlowProps) {
+export function OnboardingFlow({ profile, authDefaults }: OnboardingFlowProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [step, setStep] = useState(getInitialStep(profile));
-  const [fullName, setFullName] = useState(profile?.full_name ?? "");
+  const [fullName, setFullName] = useState(profile?.full_name ?? authDefaults.fullName ?? "");
   const [phoneNumber, setPhoneNumber] = useState(profile?.phone_number ?? "");
   const [age, setAge] = useState(profile?.age ? String(profile.age) : "");
   const [occupation, setOccupation] = useState<Occupation | "">(profile?.occupation ?? "");
@@ -60,7 +64,11 @@ export function OnboardingFlow({ profile }: OnboardingFlowProps) {
     setError(null);
     startTransition(async () => {
       try {
-        await updateProfile({ completed_onboarding: false });
+        await updateProfile({
+          full_name: fullName.trim() || profile?.full_name || authDefaults.fullName || null,
+          email: profile?.email ?? authDefaults.email ?? null,
+          completed_onboarding: false
+        });
         router.push("/dashboard");
         router.refresh();
       } catch (nextError) {
@@ -80,13 +88,19 @@ export function OnboardingFlow({ profile }: OnboardingFlowProps) {
             return;
           }
 
-          await updateProfile({ full_name: fullName.trim(), email: profile?.email ?? null });
+          await updateProfile({
+            full_name: fullName.trim(),
+            email: profile?.email ?? authDefaults.email ?? null
+          });
           setStep(1);
           return;
         }
 
         if (step === 1) {
-          await updateProfile({ phone_number: phoneNumber.trim() || null });
+          await updateProfile({
+            phone_number: phoneNumber.trim() || null,
+            email: profile?.email ?? authDefaults.email ?? null
+          });
           setStep(2);
           return;
         }
@@ -94,15 +108,17 @@ export function OnboardingFlow({ profile }: OnboardingFlowProps) {
         if (step === 2) {
           await updateProfile({
             age: age ? Number(age) : null,
-            occupation: occupation || null
+            occupation: occupation || null,
+            email: profile?.email ?? authDefaults.email ?? null
           });
           setStep(3);
           return;
         }
 
         await updateProfile({
-          full_name: fullName.trim() || null,
+          full_name: fullName.trim() || authDefaults.fullName || null,
           phone_number: phoneNumber.trim() || null,
+          email: profile?.email ?? authDefaults.email ?? null,
           age: age ? Number(age) : null,
           occupation: occupation || null,
           completed_onboarding: true
@@ -169,6 +185,21 @@ export function OnboardingFlow({ profile }: OnboardingFlowProps) {
                 className="h-12"
               />
             </div>
+            {authDefaults.email ? (
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  value={authDefaults.email}
+                  disabled
+                  readOnly
+                  className="h-12 bg-slate-50 text-slate-500 disabled:cursor-not-allowed disabled:opacity-100"
+                />
+                <p className="text-xs text-slate-400">
+                  We pulled this from your sign-in account so you don&apos;t need to type it again.
+                </p>
+              </div>
+            ) : null}
           </div>
         ) : null}
 

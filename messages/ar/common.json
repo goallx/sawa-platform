@@ -21,5 +21,7 @@
   "welcomeBack": "أهلا بعودتك",
   "createAccountTitle": "أنشئ حسابك",
   "loginDescription": "سجّل الدخول لتكمل البناء مع مجتمعك.",
-  "signupDescription": "انضم إلى منصة مجتمع البنّائين."
+  "signupDescription": "انضم إلى منصة مجتمع البنّائين.",
+  "continueWithGoogle": "المتابعة عبر Google",
+  "orContinueWithEmail": "أو المتابعة عبر البريد الإلكتروني"
 }

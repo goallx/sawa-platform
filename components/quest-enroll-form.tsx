@@ -1,4 +1,4 @@
-import { enrollInQuest } from "@/app/quests/actions";
+import { enrollInQuest } from "@/app/(dashboard)/quests/actions";
 import { SubmitButton } from "@/components/submit-button";
 
 export function QuestEnrollForm({ slug, label }: { slug: string; label: string }) {

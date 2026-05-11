@@ -4,7 +4,7 @@ import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
-import { completeQuestStep, saveStepForLater } from "@/app/quests/actions";
+import { completeQuestStep, saveStepForLater } from "@/app/(dashboard)/quests/actions";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

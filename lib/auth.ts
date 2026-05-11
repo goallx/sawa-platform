@@ -28,6 +28,30 @@ export async function redirectAuthenticatedUser(user: User) {
   redirect(nextPath);
 }
 
+export function getUserProfileDefaults(user: User | null) {
+  if (!user) {
+    return {
+      email: null,
+      fullName: null
+    };
+  }
+
+  const metadata = user.user_metadata ?? {};
+  const fullName =
+    (typeof metadata.full_name === "string" && metadata.full_name.trim()) ||
+    (typeof metadata.name === "string" && metadata.name.trim()) ||
+    [metadata.given_name, metadata.family_name]
+      .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+      .join(" ")
+      .trim() ||
+    null;
+
+  return {
+    email: user.email ?? null,
+    fullName
+  };
+}
+
 export function isAdminUser(user: User | null) {
   if (!user) {
     return false;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Chrome } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Link, useRouter } from "@/navigation";
@@ -32,8 +33,46 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
 
   const isSignup = mode === "signup";
+
+  async function handleGoogleAuth() {
+    setError(null);
+    setMessage(null);
+    setOauthLoading(true);
+
+    try {
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo
+        }
+      });
+
+      if (oauthError) {
+        throw oauthError;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not start Google sign-in.");
+      setOauthLoading(false);
+    }
+  }
+
+  async function syncProfileEmail(userId: string, nextEmail: string | null) {
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({
+        email: nextEmail,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", userId);
+
+    if (updateError) {
+      throw updateError;
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -80,11 +119,14 @@ export function AuthForm({ mode }: AuthFormProps) {
       }
 
       const { data: userData } = await supabase.auth.getUser();
-      const userId = userData.user?.id;
+      const currentUser = userData.user;
+      const userId = currentUser?.id;
 
       if (!userId) {
         throw new Error("Could not find your account after authentication.");
       }
+
+      await syncProfileEmail(userId, currentUser.email ?? null);
 
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
@@ -137,6 +179,27 @@ export function AuthForm({ mode }: AuthFormProps) {
         </div>
       </CardHeader>
       <CardContent className="px-8 pb-8 pt-0">
+        <div className="space-y-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full gap-2"
+            onClick={handleGoogleAuth}
+            disabled={oauthLoading || loading}
+          >
+            <Chrome className="h-4 w-4" />
+            {oauthLoading ? "Connecting..." : t("continueWithGoogle")}
+          </Button>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-200" />
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-400">
+              {t("orContinueWithEmail")}
+            </p>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
+        </div>
+
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -178,7 +241,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           ) : null}
           {message ? <p className="text-sm text-slate-500">{message}</p> : null}
           {error ? <p className="text-sm text-[#4F46E5]">{error}</p> : null}
-          <Button className="w-full" type="submit" disabled={loading}>
+          <Button className="w-full" type="submit" disabled={loading || oauthLoading}>
             {loading
               ? isSignup
                 ? "Creating account..."
